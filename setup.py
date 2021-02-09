@@ -9,6 +9,8 @@ setuptools.setup(
     author_email='joklost@gmail.com',
     license='MIT',
     packages=['tkmvvm'],
+    package_data={'': ['schema/tkmvvm.xsd']},
+    include_package_data=True,
     url='https://github.com/Joklost/tkmvvm',
     python_requires='>=3',
     zip_safe=False,
