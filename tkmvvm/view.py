@@ -236,7 +236,7 @@ class View(abc.ABC):
         for widget in self.widgets:
             widget.grid_forget()
 
-        self.load_xml(self.view_file)
+        self.load_xml()
         
 class SubView(View):
     def __init__(self, parent: tkinter.Tk, context: ViewModel, view_file: str, height: int, width: int):
