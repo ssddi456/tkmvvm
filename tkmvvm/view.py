@@ -34,13 +34,14 @@ class View(abc.ABC):
     context = None
     widgets = []
 
-    def __init__(self, parent: tkinter.Tk, context: ViewModel, height: int, width: int):
+    def __init__(self, parent: tkinter.Tk, context: ViewModel, view_file: str, height: int, width: int):
         self.parent = parent
         self.context = context
-        self.window = tkinter.Toplevel(self.parent)
+        self.window = parent
         self.style = tkinter.ttk.Style()
         self.height = height
         self.width = width
+        self.view_file = view_file
         view = ViewCollection()
         view.add(self)
         self.properties = {}
@@ -184,10 +185,10 @@ class View(abc.ABC):
     def resizeable(self, width: bool, height: bool):
         self.parent.resizable(width, height)
 
-    def load_xml(self, file_):
+    def load_xml(self):
         schema = etree.XMLSchema(etree.parse(SCHEMA_TXT))
         parser = etree.XMLParser(schema=schema, remove_comments=True)
-        root = etree.parse(file_, parser=parser)
+        root = etree.parse(self.view_file, parser=parser)
         context = etree.iterwalk(root, events=(START, END))
 
         container_stack = [{'name': 'Window', 'widget': self.window}]
@@ -230,3 +231,16 @@ class View(abc.ABC):
                     container_stack.pop()
 
             last_act, last_ele = act, ele
+
+    def reload_xml(self):
+        for widget in self.widgets:
+            widget.grid_forget()
+
+        self.load_xml(self.view_name)
+        
+class SubView(View):
+    def __init__(self, parent: tkinter.Tk, context: ViewModel, view_file: str, height: int, width: int):
+        super().__init__(parent, context, view_file, height, width)
+        self.window = tkinter.Toplevel(self.parent)
+
+
