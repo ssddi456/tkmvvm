@@ -186,7 +186,7 @@ class View(abc.ABC):
         self.parent.resizable(width, height)
 
     def load_xml(self):
-        schema = etree.XMLSchema(etree.parse(SCHEMA_TXT))
+        schema = etree.XMLSchema(etree.parse(io.StringIO(SCHEMA_TXT)))
         parser = etree.XMLParser(schema=schema, remove_comments=True)
         root = etree.parse(self.view_file, parser=parser)
         context = etree.iterwalk(root, events=(START, END))
@@ -236,7 +236,7 @@ class View(abc.ABC):
         for widget in self.widgets:
             widget.grid_forget()
 
-        self.load_xml(self.view_name)
+        self.load_xml(self.view_file)
         
 class SubView(View):
     def __init__(self, parent: tkinter.Tk, context: ViewModel, view_file: str, height: int, width: int):
