@@ -1,13 +1,15 @@
 import abc
 import tkinter
 import tkinter.ttk
-import viewmodel
-import mvvm
+from .viewmodel import ViewModel
+from .mvvm import ViewCollection
 import io
 import requests
 from lxml import etree
+import os
 
-SCHEMA_LOCATION = 'https://raw.githubusercontent.com/Joklost/tkmvvm/master/tkmvvm/schema/tkmvvm.xsd'
+SCHEMA_TXT = open( os.path.abspath(os.path.join(os.path.dirname(__file__), 'schema/tkmvvm.xsd')), 'r' ).read()
+
 START = 'start'
 END = 'end'
 
@@ -30,14 +32,14 @@ class View(abc.ABC):
     context = None
     widgets = []
 
-    def __init__(self, parent: tkinter.Tk, context: viewmodel.ViewModel, height: int, width: int):
+    def __init__(self, parent: tkinter.Tk, context: ViewModel, height: int, width: int):
         self.parent = parent
         self.context = context
         self.window = tkinter.Toplevel(self.parent)
         self.style = tkinter.ttk.Style()
         self.height = height
         self.width = width
-        view = mvvm.ViewCollection()
+        view = ViewCollection()
         view.add(self)
         self.properties = {}
 
@@ -181,7 +183,7 @@ class View(abc.ABC):
         self.parent.resizable(width, height)
 
     def load_xml(self, file_):
-        schema = etree.XMLSchema(etree.parse(io.StringIO(requests.get(SCHEMA_LOCATION).text)))
+        schema = etree.XMLSchema(etree.parse(SCHEMA_TXT))
         parser = etree.XMLParser(schema=schema, remove_comments=True)
         root = etree.parse(file_, parser=parser)
         context = etree.iterwalk(root, events=(START, END))
