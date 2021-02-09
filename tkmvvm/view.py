@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import abc
 import tkinter
 import tkinter.ttk
